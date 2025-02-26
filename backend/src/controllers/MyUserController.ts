@@ -1,12 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import User from "../models/user";
 
-
-const createCurrentUser = async(req: Request, res: Response) => {
-    //check if user exists
-    //create user it it dosent exist
-    //return the user object to the calling client
-
+const createCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const { auth0Id } = req.body;
         const existingUser = await User.findOne({ auth0Id });
@@ -21,10 +16,11 @@ const createCurrentUser = async(req: Request, res: Response) => {
         res.status(201).json(newUser.toObject());
     }catch(error){
         console.log(error);
-        res.status(500).json({ message: "Error creating user" });
+        res.status(500).json({ message: "error creating user"});
+        next(error);
     }
 };
 
 export default {
     createCurrentUser,
-};
+}
